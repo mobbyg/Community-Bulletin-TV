@@ -1,46 +1,183 @@
-# Community-Bulletins-TV
-## A Community Access TV Channel Bulletin System Emulator
+# Community Bulletin Board
 
-## Screenshots
+A lightweight, retro-inspired **Community Bulletin Board system** that recreates the look and feel of classic 1990s cable-access TV displays — blinking text, stacked bands, and scrolling tickers — all editable through a web browser.
 
-### Main Interface
-![Main Interface](https://via.placeholder.com/800x400?text=Main+Interface)
+Built with plain HTML, CSS, JavaScript, and PHP. No frameworks. No database.
 
-### Settings Panel
-![Settings](https://via.placeholder.com/800x400?text=Settings+Panel)
+---
 
-### Mobile View
-![Mobile](https://via.placeholder.com/400x600?text=Mobile+View)
+## 📺 What This Is
 
+This project displays rotating “screens,” each made up of horizontal text bands and an optional scrolling ticker. It’s designed for:
 
-## Table of Contents
+- Community centers
+- Local cable channels
+- Lobby or signage displays
+- Art projects and installations
+- Retro / lo-fi broadcast systems
 
-- [About](#about)
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-- [API Reference](#api-reference)
-- [Contributing](#contributing)
-- [License](#license)
+Everything is edited visually via a browser-based editor and saved to a simple JSON file.
 
-## About
-<p>
-Remeber those days when your local cable company had a channel dedicated to Community Bulletins? Community access TV in the 1990s featured a variety of local programming, including bulletin boards that provided information about community events, public announcements, and local news. These channels allowed residents to share information and engage with their community in a unique way. 
-</p>
+---
 
-This emulator recreates the text for on screen announcements and notices. It uses a simple editor to create the screens and the "bands" that gave these systems their unique look. You can do all one color screen or have bright colors to emphesize something important. There is also a ticker that runs along the bottom for scrolling messages. 
+## ✨ Features
 
-<p>
-<img width="2101" height="1059" alt="Screenshot 2026-01-27 at 11 28 00 PM" src="https://github.com/user-attachments/assets/6f59e05e-08f0-4a10-8e38-4e7ac3381935" />
-</p>
+- Authentic CRT-style bulletin board layout
+- Multiple rotating screens
+- Configurable screen duration
+- Stacked text bands with:
+  - Color, size, alignment
+  - Optional blinking
+- Smooth scrolling ticker
+- Live date & time macros
+- Web-based editor with live preview
+- JSON storage (no database required)
+- Runs well on low-power or older hardware
 
-The inspiration for this came from 2 different sources. <a href="https://github.com/shane-mason/FieldStation42">The Field Station 42 project by Shane Mason</a> and the <a href="https://github.com/netbymatt/ws4kp">WS4K+ project by Matt Walsh</a>. Both of these projects capture retro TV intheir own unique way. FS42, a cable box simulator that lets you create stations that stream and even a station scheduler and onscreen "Prevue Guide" channel. The WS4K+ captures that "Weather Channel" vibe, which I took a lot of cues from. After playing with them for a bit, I didn't know if there was a project that captured the Community Access vibe, so I decided to make this to incorporate into my own FS42 streaming cable box. If you're in for a penny, may as well be a pound, right?
+---
 
-I wanted to make this as simple as I can so there wasn't a lot of moving parts that needed to be configured. The goal is to clone, and just drop it in the folder and go with as little fuss as possible. 
-This was developed and tested with the following:
-<li>
-  <ul>An old PC running Ubuntu Server 24 with 12 GB of RAM</ul>
-  <ul>Nginx Webserver</ul>
-  <ul>Tested primarily in Firefox</ul>
-</li>
+## 🗂 Project Structure
 
+```bash
+community-bulletin/
+├── play.html # Public display page
+├── editor.html # Editor interface
+├── save.php # Saves bulletin data
+├── data/
+│ └── bulletin.json # All content & settings
+├── js/
+│ ├── bulletin.js # Display logic
+│ └── editor.js # Editor logic
+├── css/
+│ └── bulletin.css # Shared styles
+└── README.md
+```
+
+## 🚀 Getting Started
+
+### Requirements
+
+- Web server (Apache or NGINX)
+- PHP enabled
+- No database
+
+### Installation
+
+1. Copy or clone the project into your web root:
+   ```bash
+   /var/www/html/community-bulletin/
+2. Ensure PHP can write to the data directory:
+  ```bash
+    chown -R www-data:www-data data
+    chmod 664 data/bulletin.json
+```
+3. Open in your browser:
+
+- Display:
+```bash
+/community-bulletin/play.html
+```
+- Editor:
+```bash
+/community-bulletin/editor.html
+```
+
+🕒 Macros
+
+Macros are placeholders in band or ticker text that update automatically.
+
+Date & Time Macros
+
+Defined in bulletin.json:
+```JSON
+"macros": {
+  "date": "%Y-%m-%d",
+  "time": "%H:%M:%S",
+  "datetime": "%Y-%m-%d %H:%M:%S"
+}
+```
+Usage:
+```css
+Date: {date}   Time: {time}
+```
+
+Macros update live on the display page.
+
+Spacing Macros (Built-In)
+
+These do not need to be configured:
+| Macro     | Result       |
+| --------- | ------------ |
+| `{space}` | Single space |
+| `{tab}`   | 3 spaces     |
+| `{linef}` | Line break   |
+
+Example:
+```css
+Date:{tab}{date}{linef}Time:{tab}{time}
+```
+
+⏱ Screen Rotation
+
+Screen timing is controlled globally:
+```JSON
+"settings": {
+  "screenDuration": 10
+}
+```
+- Duration is in seconds
+- Screens rotate automatically on the display page
+
+  📜 Ticker
+
+Ticker settings:
+```json
+"ticker": {
+  "speed": 40,
+  "text": "COMMUNITY EVENTS • LOCAL ANNOUNCEMENTS • WEATHER ALERTS"
+}
+```
+
+- Speed is pixels per second
+- Ticker text supports macros
+
+  🛠 Editor Notes
+
+- Editor includes a live preview
+- Changes are saved to bulletin.json
+- Preview resolves macros for readability
+- Display page updates macros in real time
+
+🔐 Security Notes
+
+This project assumes a trusted environment.
+
+If exposed publicly:
+
+- Restrict access to editor.html
+- Protect save.php
+- Consider HTTP authentication or IP filtering
+
+🧠 Design Philosophy
+
+- Simple over clever
+- Files instead of databases
+- Predictable rendering
+- Hardware-friendly
+- Nostalgia with purpose
+
+🧭 Roadmap Ideas
+
+- Per-screen ticker overrides
+- Custom macro definitions
+- Transition effects
+- Editor UI enhancements
+- Authentication
+- Preset import/export
+
+📄 License
+
+MIT License
+Free to use, modify, and redistribute.
+
+If you run this on a cable channel in 1996, that’s on you 😉
