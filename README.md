@@ -1,8 +1,9 @@
-# Community Bulletin Board
+# Community Bulletin Board TV
 
 A lightweight, retro-inspired **Community Bulletin Board system** that recreates the look and feel of classic 1990s cable-access TV displays — blinking text, stacked bands, and scrolling tickers — all editable through a web browser.
 
 Built with plain HTML, CSS, JavaScript, and PHP. No frameworks. No database.
+<img width="642" height="473" alt="Screenshot 2026-02-03 083548" src="https://github.com/user-attachments/assets/0b34ef26-b0d3-416f-ad5a-1b2915091dc7" />
 
 ---
 
@@ -141,12 +142,19 @@ Ticker settings:
 - Speed is pixels per second
 - Ticker text supports macros
 
+
+
   🛠 Editor Notes
+  
+<img width="956" height="453" alt="Screenshot 2026-02-03 083919" src="https://github.com/user-attachments/assets/2629ab49-0030-4c3e-aab3-f382ef67066a" />
+
 
 - Editor includes a live preview
 - Changes are saved to bulletin.json
 - Preview resolves macros for readability
 - Display page updates macros in real time
+
+
 
 🔐 Security Notes
 
