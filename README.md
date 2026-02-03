@@ -5,6 +5,20 @@ A lightweight, retro-inspired **Community Bulletin Board system** that recreates
 Built with plain HTML, CSS, JavaScript, and PHP. No frameworks. No database.
 <img width="642" height="473" alt="Screenshot 2026-02-03 083548" src="https://github.com/user-attachments/assets/0b34ef26-b0d3-416f-ad5a-1b2915091dc7" />
 
+
+## 📺 Screenshots
+
+> Community Bulletin TV is designed to feel like a classic cable-access bulletin board — bold text, simple layouts, and continuous rotation.
+
+### Welcome Screen
+![Welcome Screen](screenshots/screen-welcome.png)
+
+### Programming / Announcements
+![Programming Screen](screenshots/screen-programming.png)
+
+### Upcoming Features
+![Coming Soon Screen](screenshots/screen-coming-soon.png)
+
 ---
 
 ## 📺 What This Is
