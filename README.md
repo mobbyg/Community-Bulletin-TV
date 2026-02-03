@@ -185,7 +185,7 @@ If exposed publicly:
 
 📄 License
 
-MIT License
+GPL2 License
 Free to use, modify, and redistribute.
 
 If you run this on a cable channel in 1996, that’s on you 😉
