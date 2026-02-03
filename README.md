@@ -1,5 +1,8 @@
 # Community Bulletin Board TV
 
+
+> A retro-style, JSON-driven community bulletin board inspired by classic cable-access TV.
+
 A lightweight, retro-inspired **Community Bulletin Board system** that recreates the look and feel of classic 1990s cable-access TV displays — blinking text, stacked bands, and scrolling tickers — all editable through a web browser.
 
 Built with plain HTML, CSS, JavaScript, and PHP. No frameworks. No database.
@@ -96,6 +99,26 @@ community-bulletin/
 ```bash
 /community-bulletin/editor.html
 ```
+
+## 🧪 Demo Configuration
+
+This repository includes a fully-featured example configuration:
+
+The demo file showcases:
+
+- Multiple rotating screens
+- Band alignment (left / center / right)
+- Font sizes and colors
+- Blinking text
+- Spacing macros (`{space}`, `{tab}`, `{linef}`)
+- Date & time macros
+- Global ticker
+- Screen rotation timing
+
+If you want to experiment, start by editing `bulletin.json` and reload the play page.
+
+
+
 
 🕒 Macros
 
