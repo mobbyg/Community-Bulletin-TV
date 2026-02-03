@@ -1,0 +1,10 @@
+community-bulletin/
+├── play.html
+├── editor.html
+├── css/
+│   └── bulletin.css
+├── js/
+│   └── bulletin.js
+├── data/
+│   └── bulletin.json
+└── fonts/   (optional later)
