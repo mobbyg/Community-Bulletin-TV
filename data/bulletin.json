@@ -1,0 +1,107 @@
+{
+  "settings": {
+    "aspectRatio": "4:3",
+    "screenDuration": 10
+  },
+
+  "macros": {
+    "date": "%a %b %e",
+    "time": "%H:%M:%S",
+    "datetime": "%a %b %e %H:%M"
+  },
+
+  "ticker": {
+    "text": "Welcome to Community Bulletin TV  •  Open-source retro signage  •  GitHub: https://github.com/mobbyg/Community-Bulletin-TV",
+    "speed": 40
+  },
+
+  "screens": [
+    {
+      "bands": [
+        {
+          "text": "Community Bulletin TV",
+          "align": "center",
+          "fontSize": "xlarge",
+          "height": 120,
+          "bgColor": "#002244",
+          "textColor": "#00ffcc"
+        },
+        {
+          "text": "Serving your community{linef}since the dial-up era",
+          "align": "center",
+          "fontSize": "medium",
+          "height": 90,
+          "bgColor": "#000000",
+          "textColor": "#ffffff"
+        },
+        {
+          "text": "Today is {date}{tab}Current time: {time}",
+          "align": "center",
+          "fontSize": "medium",
+          "height": 80,
+          "bgColor": "#111111",
+          "textColor": "#00ff00"
+        }
+      ]
+    },
+
+    {
+      "bands": [
+        {
+          "text": "Tonight on Channel 3",
+          "align": "left",
+          "fontSize": "large",
+          "height": 100,
+          "bgColor": "#330000",
+          "textColor": "#ffcc00"
+        },
+        {
+          "text": "7:00 PM  Community Town Hall{linef}8:30 PM  Local Sports Recap{linef}9:00 PM  Movie Night",
+          "align": "left",
+          "fontSize": "medium",
+          "height": 160,
+          "bgColor": "#000000",
+          "textColor": "#ffffff"
+        },
+        {
+          "text": "LIVE",
+          "align": "right",
+          "fontSize": "large",
+          "height": 80,
+          "bgColor": "#990000",
+          "textColor": "#ffffff",
+          "blink": true
+        }
+      ]
+    },
+
+    {
+      "bands": [
+        {
+          "text": "Coming Soon",
+          "align": "center",
+          "fontSize": "large",
+          "height": 100,
+          "bgColor": "#002200",
+          "textColor": "#99ff99"
+        },
+        {
+          "text": "- Per-screen duration control{linef}- Ticker editor UI{linef}- More date & time macros{linef}- Theme presets{linef}- Remote JSON updates",
+          "align": "left",
+          "fontSize": "medium",
+          "height": 200,
+          "bgColor": "#000000",
+          "textColor": "#ffffff"
+        },
+        {
+          "text": "Contribute or follow along:{linef}https://github.com/mobbyg/Community-Bulletin-TV",
+          "align": "center",
+          "fontSize": "small",
+          "height": 90,
+          "bgColor": "#111111",
+          "textColor": "#00ccff"
+        }
+      ]
+    }
+  ]
+}
