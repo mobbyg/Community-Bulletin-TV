@@ -2,6 +2,7 @@ let data;
 let currentScreen = 0;
 let currentBand = 0;
 let scanlines = false;
+
 const screenEl = document.getElementById("screen");
 const listEl = document.getElementById("screenList");
 const bandForm = document.getElementById("bandForm");
@@ -17,13 +18,20 @@ const timeFormatField = document.getElementById("timeFormat");
 const tickerTextField = document.getElementById("tickerText");
 const tickerSpeedField = document.getElementById("tickerSpeed");
 
+/* ---------- LOAD JSON ---------- */
 
-// Load JSON
 fetch("data/bulletin.json")
-  .then(r => r.json())
+  .then(r => {
+    if (!r.ok) throw new Error("HTTP error! status: " + r.status);
+    return r.json();
+  })
   .then(json => {
     data = json;
-    // Ensure macros object exists
+
+    if (!data.screens || !Array.isArray(data.screens) || data.screens.length === 0) {
+      data.screens = [{ bands: [] }];
+    }
+
     if (!data.macros) {
       data.macros = {
         date: dateFormatField.value || "%Y-%m-%d",
@@ -31,44 +39,153 @@ fetch("data/bulletin.json")
         datetime: "%Y-%m-%d %H:%M:%S"
       };
     } else {
-      // Sync inputs with loaded values
       dateFormatField.value = data.macros.date || "%Y-%m-%d";
       timeFormatField.value = data.macros.time || "%H:%M:%S";
     }
 
-//  INSERTED BLOCK STARTS HERE
     if (!data.ticker) {
       data.ticker = { text: "", speed: 40 };
     }
 
     tickerTextField.value = data.ticker.text || "";
     tickerSpeedField.value = data.ticker.speed || 40;
-    // INSERTED BLOCK ENDS HERE
 
     renderScreenList();
     render();
+
     if (data.screens[0]?.bands?.length) {
       loadBand();
     }
+  })
+  .catch(err => {
+    console.error("Failed to load bulletin.json:", err);
+    screenEl.innerHTML =
+      '<div style="color:#D65108;padding:20px;text-align:center;">' +
+      "Error loading bulletin data: " + err.message +
+      "</div>";
   });
 
-// Render screen list
+/* ---------- SCREEN LIST ---------- */
+
 function renderScreenList() {
   listEl.innerHTML = "";
+
   data.screens.forEach((_, i) => {
     const li = document.createElement("li");
-    li.textContent = "Screen " + (i + 1);
-    li.onclick = () => {
+    li.className = "screen-item" + (i === currentScreen ? " selected" : "");
+
+    const selectButton = document.createElement("button");
+    selectButton.type = "button";
+    selectButton.className = "screen-select";
+    selectButton.textContent = "Screen " + (i + 1);
+
+    selectButton.onclick = () => {
       currentScreen = i;
       currentBand = 0;
+      renderScreenList();
       render();
       loadBand();
     };
+
+    const actions = document.createElement("div");
+    actions.className = "screen-actions";
+
+    const upButton = document.createElement("button");
+    upButton.type = "button";
+    upButton.textContent = "⬆";
+    upButton.title = "Move screen up";
+    upButton.disabled = i === 0;
+    upButton.onclick = event => {
+      event.stopPropagation();
+      moveScreenUp(i);
+    };
+
+    const downButton = document.createElement("button");
+    downButton.type = "button";
+    downButton.textContent = "⬇";
+    downButton.title = "Move screen down";
+    downButton.disabled = i === data.screens.length - 1;
+    downButton.onclick = event => {
+      event.stopPropagation();
+      moveScreenDown(i);
+    };
+
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.className = "delete-screen";
+    deleteButton.textContent = "✕";
+    deleteButton.title = "Delete screen";
+    deleteButton.disabled = data.screens.length <= 1;
+    deleteButton.onclick = event => {
+      event.stopPropagation();
+      deleteScreen(i);
+    };
+
+    actions.appendChild(upButton);
+    actions.appendChild(downButton);
+    actions.appendChild(deleteButton);
+
+    li.appendChild(selectButton);
+    li.appendChild(actions);
     listEl.appendChild(li);
   });
 }
 
-// Main render function with macro resolution in preview
+function moveScreenUp(index) {
+  if (index <= 0) return;
+
+  [data.screens[index - 1], data.screens[index]] =
+    [data.screens[index], data.screens[index - 1]];
+
+  if (currentScreen === index) {
+    currentScreen = index - 1;
+  } else if (currentScreen === index - 1) {
+    currentScreen = index;
+  }
+
+  renderScreenList();
+  render();
+  loadBand();
+}
+
+function moveScreenDown(index) {
+  if (index >= data.screens.length - 1) return;
+
+  [data.screens[index + 1], data.screens[index]] =
+    [data.screens[index], data.screens[index + 1]];
+
+  if (currentScreen === index) {
+    currentScreen = index + 1;
+  } else if (currentScreen === index + 1) {
+    currentScreen = index;
+  }
+
+  renderScreenList();
+  render();
+  loadBand();
+}
+
+function deleteScreen(index) {
+  if (data.screens.length <= 1) return;
+
+  if (!confirm("Delete Screen " + (index + 1) + "?")) return;
+
+  data.screens.splice(index, 1);
+
+  if (currentScreen > index) {
+    currentScreen--;
+  } else if (currentScreen === index) {
+    currentScreen = Math.min(currentScreen, data.screens.length - 1);
+    currentBand = 0;
+  }
+
+  renderScreenList();
+  render();
+  loadBand();
+}
+
+/* ---------- MAIN RENDER ---------- */
+
 function render() {
   screenEl.innerHTML = `
     <div id="bands"></div>
@@ -76,42 +193,66 @@ function render() {
       <div id="ticker-text"></div>
     </div>
   `;
+
   const bandsEl = screenEl.querySelector("#bands");
   screenEl.className = "aspect-4-3";
-  if (scanlines) screenEl.classList.add("scanlines");
+
+  if (scanlines) {
+    screenEl.classList.add("scanlines");
+  }
 
   const screen = data.screens[currentScreen];
+
   if (screen && screen.bands) {
     screen.bands.forEach((band, i) => {
       const div = document.createElement("div");
-      div.className = `band ${band.align || "center"} font-${band.fontSize || "medium"}`;
-      if (band.blink) div.classList.add("blink");
+
+      div.className =
+        "band " +
+        (band.align || "center") +
+        " font-" +
+        (band.fontSize || "medium");
+
+      if (band.blink) {
+        div.classList.add("blink");
+      }
+
       div.style.backgroundColor = band.bgColor || "transparent";
       div.style.color = band.textColor || "#ffffff";
       div.style.height = `${band.height || 100}px`;
 
-      // Resolve macros for preview (shows real date/time)
-      const resolvedText = resolveMacros(band.text || "");
-      div.textContent = resolvedText;
+      div.textContent = resolveMacros(band.text || "");
 
       div.onclick = () => {
         currentBand = i;
         loadBand();
       };
+
       bandsEl.appendChild(div);
     });
   }
 
-  // Ticker preview (no macros needed here usually)
   const tickerTextEl = document.getElementById("ticker-text");
   tickerTextEl.textContent = data.ticker?.text || "";
   startEditorTicker();
 }
 
-// Load selected band into form
+/* ---------- BAND EDITOR ---------- */
+
 function loadBand() {
-  const band = data.screens[currentScreen]?.bands[currentBand];
-  if (!band) return;
+  const band = data.screens[currentScreen]?.bands?.[currentBand];
+
+  if (!band) {
+    textField.value = "";
+    heightField.value = 80;
+    bgField.value = "#000000";
+    fgField.value = "#ffffff";
+    sizeField.value = "medium";
+    alignField.value = "center";
+    blinkField.checked = false;
+    return;
+  }
+
   textField.value = band.text || "";
   heightField.value = band.height || 80;
   bgField.value = band.bgColor || "#000000";
@@ -121,11 +262,12 @@ function loadBand() {
   blinkField.checked = band.blink || false;
 }
 
-// Save band changes and re-render
 bandForm.onsubmit = e => {
   e.preventDefault();
-  const band = data.screens[currentScreen]?.bands[currentBand];
+
+  const band = data.screens[currentScreen]?.bands?.[currentBand];
   if (!band) return;
+
   band.text = textField.value;
   band.height = Number(heightField.value);
   band.bgColor = bgField.value;
@@ -133,64 +275,61 @@ bandForm.onsubmit = e => {
   band.fontSize = sizeField.value;
   band.align = alignField.value;
   band.blink = blinkField.checked;
+
   render();
 };
 
-// Auto-save on any input change
 [textField, heightField, bgField, fgField, sizeField, alignField, blinkField]
   .forEach(el => {
     el.addEventListener("input", () => bandForm.requestSubmit());
   });
 
-// Update macros when format inputs change
+/* ---------- MACROS ---------- */
+
 [dateFormatField, timeFormatField].forEach(el => {
   el.addEventListener("input", () => {
     if (!data.macros) data.macros = {};
+
     data.macros.date = dateFormatField.value || "%Y-%m-%d";
     data.macros.time = timeFormatField.value || "%H:%M:%S";
-    data.macros.datetime = data.macros.datetime || "%Y-%m-%d %H:%M:%S";
-    render(); // Refresh preview to show updated formats
+    data.macros.datetime =
+      data.macros.datetime || "%Y-%m-%d %H:%M:%S";
+
+    render();
   });
 });
 
-// Update ticker when edited
+/* ---------- TICKER ---------- */
+
 [tickerTextField, tickerSpeedField].forEach(el => {
   el.addEventListener("input", () => {
     data.ticker.text = tickerTextField.value;
     data.ticker.speed = Number(tickerSpeedField.value) || 40;
-    render(); // refresh preview
+    render();
   });
 });
 
-// Auto-save macros when date/time format changes
-[dateFormatField, timeFormatField].forEach(el => {
-  el.addEventListener("change", () => {
-    document.getElementById("saveJson").click();
-  });
-});
+/* ---------- MACRO RESOLUTION ---------- */
 
-// Macro resolution (same as bulletin.js)
 function resolveMacros(text) {
   if (typeof text !== "string") return text;
 
   const d = new Date();
   const macros = data.macros || {};
-  const format = (fmt) => fmt ? formatDate(fmt, d) : "";
+  const format = fmt => (fmt ? formatDate(fmt, d) : "");
 
   return text
-    // spacing macros
     .replaceAll("{space}", " ")
     .replaceAll("{tab}", "   ")
     .replaceAll("{linef}", "\n")
-
-    // date/time macros
     .replaceAll("{date}", format(macros.date))
     .replaceAll("{time}", format(macros.time))
     .replaceAll("{datetime}", format(macros.datetime));
 }
 
 function formatDate(fmt, d) {
-  const pad = (n) => String(n).padStart(2, "0");
+  const pad = n => String(n).padStart(2, "0");
+
   return fmt
     .replace(/%Y/g, d.getFullYear())
     .replace(/%m/g, pad(d.getMonth() + 1))
@@ -200,33 +339,47 @@ function formatDate(fmt, d) {
     .replace(/%S/g, pad(d.getSeconds()));
 }
 
-// Ticker animation
+/* ---------- TICKER ANIMATION ---------- */
+
 let tickerX = 0;
 let tickerRAF = null;
+
 function startEditorTicker() {
-  if (tickerRAF) cancelAnimationFrame(tickerRAF);
+  if (tickerRAF) {
+    cancelAnimationFrame(tickerRAF);
+  }
+
   const tickerTextEl = screenEl.querySelector("#ticker-text");
   if (!tickerTextEl) return;
+
   tickerX = screenEl.offsetWidth;
+
   function tick() {
     tickerX -= 1;
+
     if (tickerX < -tickerTextEl.offsetWidth) {
       tickerX = screenEl.offsetWidth;
     }
+
     tickerTextEl.style.transform = `translateX(${tickerX}px)`;
     tickerRAF = requestAnimationFrame(tick);
   }
+
   tick();
 }
 
-// Controls
+/* ---------- CONTROLS ---------- */
+
 document.getElementById("addScreen").onclick = () => {
   data.screens.push({ bands: [] });
+  currentScreen = data.screens.length - 1;
+  currentBand = 0;
   renderScreenList();
+  render();
+  loadBand();
 };
 
 document.getElementById("saveJson").onclick = () => {
-  // ALWAYS sync macros from inputs before saving
   data.macros = {
     date: dateFormatField.value || "%Y-%m-%d",
     time: timeFormatField.value || "%H:%M:%S",
@@ -238,9 +391,12 @@ document.getElementById("saveJson").onclick = () => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data, null, 2)
   })
-  .then(r => r.text())
-  .then(() => alert("Saved to server"))
-  .catch(err => alert("Save failed: " + err.message));
+    .then(r => {
+      if (!r.ok) throw new Error("HTTP error! status: " + r.status);
+      return r.text();
+    })
+    .then(() => alert("Saved to server"))
+    .catch(err => alert("Save failed: " + err.message));
 };
 
 document.getElementById("toggleScanlines").onclick = () => {
@@ -250,6 +406,7 @@ document.getElementById("toggleScanlines").onclick = () => {
 
 document.getElementById("addBand").onclick = () => {
   const screen = data.screens[currentScreen];
+
   screen.bands.push({
     text: "NEW MESSAGE",
     height: 80,
@@ -259,6 +416,7 @@ document.getElementById("addBand").onclick = () => {
     align: "center",
     blink: false
   });
+
   currentBand = screen.bands.length - 1;
   render();
   loadBand();
@@ -266,8 +424,12 @@ document.getElementById("addBand").onclick = () => {
 
 document.getElementById("moveUp").onclick = () => {
   const bands = data.screens[currentScreen].bands;
+
   if (currentBand <= 0) return;
-  [bands[currentBand - 1], bands[currentBand]] = [bands[currentBand], bands[currentBand - 1]];
+
+  [bands[currentBand - 1], bands[currentBand]] =
+    [bands[currentBand], bands[currentBand - 1]];
+
   currentBand--;
   render();
   loadBand();
@@ -275,8 +437,12 @@ document.getElementById("moveUp").onclick = () => {
 
 document.getElementById("moveDown").onclick = () => {
   const bands = data.screens[currentScreen].bands;
+
   if (currentBand >= bands.length - 1) return;
-  [bands[currentBand + 1], bands[currentBand]] = [bands[currentBand], bands[currentBand + 1]];
+
+  [bands[currentBand + 1], bands[currentBand]] =
+    [bands[currentBand], bands[currentBand + 1]];
+
   currentBand++;
   render();
   loadBand();

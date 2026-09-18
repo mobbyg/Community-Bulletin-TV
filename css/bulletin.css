@@ -1,11 +1,13 @@
 html, body {
   margin: 0;
-  background: black;
-  color: white;
+  background: #000;
+  color: #fff;
   font-family: 'VT323', monospace;
   height: 100%;
   overflow: hidden;
 }
+
+/* ===== CONTROLS ===== */
 
 #controls {
   position: fixed;
@@ -14,11 +16,28 @@ html, body {
   z-index: 1000;
 }
 
-#controls button {
+#controls button,
+button {
   font-family: inherit;
   font-size: 18px;
   margin-right: 6px;
+  border: 1px solid #0267C1;
+  background: #591F0A;
+  color: #fff;
+  padding: 5px 10px;
+  cursor: pointer;
 }
+
+#controls button:hover,
+button:hover {
+  background: #0267C1;
+}
+
+button:active {
+  background: #0075C4;
+}
+
+/* ===== VIEWPORT / SCREEN ===== */
 
 #viewport {
   position: absolute;
@@ -32,7 +51,7 @@ html, body {
 
 #screen {
   position: relative;
-  background: black;
+  background: #000;
   overflow: hidden;
 }
 
@@ -45,6 +64,8 @@ html, body {
   width: 1280px;
   height: 720px;
 }
+
+/* ===== BULLETIN BANDS ===== */
 
 .band {
   width: 100%;
@@ -82,14 +103,15 @@ html, body {
   50% { opacity: 0; }
 }
 
-/* Ticker */
+/* ===== TICKER ===== */
+
 #ticker {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
   height: 48px;
-  background: #003300;
+  background: #591F0A;
   overflow: hidden;
 }
 
@@ -100,7 +122,9 @@ html, body {
   line-height: 48px;
   will-change: transform;
 }
+
 /* ===== CRT SCANLINES ===== */
+
 .scanlines::before {
   content: "";
   pointer-events: none;
@@ -116,36 +140,13 @@ html, body {
   mix-blend-mode: multiply;
   z-index: 999;
 }
-/* ===== EDITOR OVERRIDES ===== */
-body.editor #viewport {
-  position: relative;
-  inset: auto;
-  flex: 1;
-}
+
 /* ===== EDITOR LAYOUT ===== */
 
-#previewPanel {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #000;
-  position: relative;
+body.editor {
+  overflow: hidden;
 }
 
-/* subtle separator glow (very 90s) */
-#editorPanel {
-  box-shadow: inset -2px 0 0 #555;
-}
-#bands {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 48px; /* EXACTLY ticker height */
-  display: flex;
-  flex-direction: column;
-}
 .editor #editorLayout {
   display: grid;
   grid-template-columns: 360px 1fr;
@@ -153,22 +154,44 @@ body.editor #viewport {
 }
 
 .editor #editorPanel {
+  min-width: 0;
   overflow-y: auto;
   padding: 12px;
-  border-right: 2px solid #333;
+  padding-bottom: 70px;
+  background: #111;
+  color: #fff;
+  border-right: 3px solid #0267C1;
+  box-shadow: inset -2px 0 0 #591F0A;
 }
+
+#previewPanel {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  position: relative;
+}
+
+/* ===== EDITOR SECTIONS ===== */
 
 .editor details {
   margin-bottom: 12px;
-  border: 1px solid #444;
-  padding: 6px;
+  border: 1px solid #591F0A;
+  padding: 8px;
   background: #111;
 }
 
+.editor details[open] {
+  border-color: #0267C1;
+}
+
 .editor summary {
+  color: #EFA00B;
   cursor: pointer;
   font-weight: bold;
-  margin-bottom: 6px;
+  font-size: 20px;
+  margin-bottom: 8px;
 }
 
 .editor label {
@@ -176,12 +199,13 @@ body.editor #viewport {
   margin-bottom: 8px;
 }
 
-.editor textarea{
+.editor textarea {
   width: 100%;
   box-sizing: border-box;
   resize: vertical;
   min-height: 90px;
   font-family: inherit;
+  font-size: 18px;
 }
 
 .editor input[type="text"],
@@ -189,10 +213,109 @@ body.editor #viewport {
 .editor select {
   width: 100%;
   box-sizing: border-box;
+  font-family: inherit;
+  font-size: 18px;
+}
+
+.editor input,
+.editor select,
+.editor textarea {
+  background: #000;
+  color: #fff;
+  border: 1px solid #591F0A;
+  padding: 4px;
+}
+
+.editor input:focus,
+.editor select:focus,
+.editor textarea:focus {
+  outline: none;
+  border-color: #EFA00B;
 }
 
 .editor .button-row {
   display: flex;
   gap: 6px;
   margin: 8px 0;
+}
+
+.editor .button-row button {
+  margin-right: 0;
+}
+
+/* ===== SCREEN LIST ===== */
+
+#screenList {
+  list-style: none;
+  margin: 0 0 10px;
+  padding: 0;
+}
+
+.screen-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 5px;
+  padding: 4px;
+  border: 1px solid #591F0A;
+  background: #000;
+}
+
+.screen-item.selected {
+  border-color: #EFA00B;
+  background: #591F0A;
+}
+
+.screen-select {
+  margin: 0;
+  padding: 5px 8px;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  text-align: left;
+  width: 100%;
+}
+
+.screen-select:hover {
+  background: #0267C1;
+}
+
+.screen-actions {
+  display: flex;
+  gap: 3px;
+}
+
+.screen-actions button {
+  margin: 0;
+  padding: 3px 7px;
+  font-size: 16px;
+}
+
+.screen-actions .delete-screen {
+  border-color: #D65108;
+}
+
+.screen-actions .delete-screen:hover {
+  background: #D65108;
+}
+
+/* ===== EDITOR PREVIEW ===== */
+
+#bands {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 48px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== EDITOR OVERRIDES ===== */
+
+body.editor #viewport {
+  position: relative;
+  inset: auto;
+  flex: 1;
 }

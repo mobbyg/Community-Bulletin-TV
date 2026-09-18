@@ -2,114 +2,111 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Bulletin Editor</title>
+  <title>Community Bulletin TV Editor</title>
   <link rel="stylesheet" href="css/bulletin.css">
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 </head>
 <body class="editor">
 
 <div id="controls">
-  <button id="addScreen">Add Screen</button>
-  <button id="saveJson">Save JSON</button>
   <button id="toggleScanlines">Scanlines</button>
   <button id="addBand">Add Band</button>
 </div>
 
 <div id="editorLayout">
-<div id="editorPanel">
+  <div id="editorPanel">
 
-  <details open>
-    <summary>Screens</summary>
-    <ul id="screenList"></ul>
-    <button id="addScreen">Add Screen</button>
-  </details>
+    <details open>
+      <summary>Screens</summary>
+      <ul id="screenList"></ul>
+      <button id="addScreen">Add Screen</button>
+      <button id="saveJson">Save JSON</button>
+    </details>
 
-  <details open>
-    <summary>Band Editor</summary>
-    <form id="bandForm">
-      <label>Text<br>
-        <textarea id="text"></textarea>
-      </label>
+    <details open>
+      <summary>Band Editor</summary>
+      <form id="bandForm">
+        <label>Text<br>
+          <textarea id="text"></textarea>
+        </label>
 
-      <label>Band Height
-        <input type="number" id="height">
-      </label>
+        <label>Band Height
+          <input type="number" id="height">
+        </label>
 
-      <label>Background
-        <input type="color" id="bg">
-      </label>
+        <label>Background
+          <input type="color" id="bg">
+        </label>
 
-      <label>Text Color
-        <input type="color" id="fg">
-      </label>
+        <label>Text Color
+          <input type="color" id="fg">
+        </label>
 
-      <label>Text Size
-        <select id="size">
-          <option>small</option>
-          <option>medium</option>
-          <option>large</option>
-          <option>xlarge</option>
-        </select>
-      </label>
+        <label>Text Size
+          <select id="size">
+            <option>small</option>
+            <option>medium</option>
+            <option>large</option>
+            <option>xlarge</option>
+          </select>
+        </label>
 
-      <label>Align
-        <select id="align">
-          <option>center</option>
-          <option>left</option>
-          <option>right</option>
-        </select>
+        <label>Align
+          <select id="align">
+            <option>center</option>
+            <option>left</option>
+            <option>right</option>
+          </select>
+        </label>
+
+        <label>
+          <input type="checkbox" id="blink"> Blink
+        </label>
+
+        <div class="button-row">
+          <button type="button" id="moveUp">⬆ Move Up</button>
+          <button type="button" id="moveDown">⬇ Move Down</button>
+        </div>
+
+        <button type="submit">Update Band</button>
+      </form>
+    </details>
+
+    <details open>
+      <summary>Ticker</summary>
+      <label>
+        Ticker Text<br>
+        <textarea id="tickerText" rows="3"></textarea>
       </label>
 
       <label>
-        <input type="checkbox" id="blink"> Blink
+        Speed
+        <input type="number" id="tickerSpeed" min="10" max="300">
+      </label>
+    </details>
+
+    <details>
+      <summary>Date / Time Macros</summary>
+      <label>
+        Date format<br>
+        <input id="dateFormat">
       </label>
 
-      <div class="button-row">
-        <button type="button" id="moveUp">⬆ Move Up</button>
-        <button type="button" id="moveDown">⬇ Move Down</button>
-      </div>
+      <label>
+        Time format<br>
+        <input id="timeFormat">
+      </label>
+    </details>
 
-      <button type="submit">Update Band</button>
-    </form>
-  </details>
-
-  <details open>
-    <summary>Ticker</summary>
-    <label>
-      Ticker Text<br>
-      <textarea id="tickerText" rows="3"></textarea>
-    </label>
-
-    <label>
-      Speed
-      <input type="number" id="tickerSpeed" min="10" max="300">
-    </label>
-  </details>
-
-  <details>
-    <summary>Date / Time Macros</summary>
-    <label>
-      Date format<br>
-      <input id="dateFormat">
-    </label>
-
-    <label>
-      Time format<br>
-      <input id="timeFormat">
-    </label>
-  </details>
-
-  <button id="saveJson">Save JSON</button>
-
-</div>
-
-
-<div id="previewPanel">
-  <div id="viewport">
-    <div id="screen">
-     <div id="bands"></div>
   </div>
- </div>
+
+  <div id="previewPanel">
+    <div id="viewport">
+      <div id="screen">
+        <div id="bands"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script src="js/editor.js"></script>
